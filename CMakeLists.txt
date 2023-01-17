@@ -31,7 +31,8 @@ ELSE()
   find_package(SDL2_IMAGE REQUIRED)
   include_directories(${SDL2_INCLUDE_DIRS})
   include_directories(${SDL2_IMAGE_INCLUDE_DIRS})
-
+  
+  file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/images DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
   add_executable(SDL_part1 main.cpp Project_SDL1.cpp)
   target_link_libraries(SDL_part1 ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES})
 ENDIF()
