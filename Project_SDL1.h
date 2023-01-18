@@ -28,7 +28,7 @@ constexpr unsigned AURA_MOUTON = 250;
 #define ORBIT_SPEED 0.030f //speed of the shepherd dog
 constexpr unsigned ORBIT_RADIUS = 170.0f; //radius of the shepherd dog
 constexpr unsigned AURA_PROCREATION = 10; //aura of the sheep to procreate 
-constexpr unsigned NB_SHEPHERD_DOG = 25;
+constexpr unsigned NB_SHEPHERD_DOG = 3;
 constexpr unsigned AURA_DOG = 250;
 // Minimal distance of animals to the border
 // of the screen
@@ -219,7 +219,6 @@ private:
   playable_character(const std::string& file_path, SDL_Surface* window_surface_ptr);
   ~playable_character(); // todo: Use the destructor to release memory and "clean up
                // behind you"
-  virtual void handle_event(SDL_Event& event) = 0;
 };
 
 class shepherd : public playable_character {
@@ -232,7 +231,6 @@ class shepherd : public playable_character {
   shepherd(const std::string& file_path, SDL_Surface* window_surface_ptr);
   ~shepherd(); // todo: Use the destructor to release memory and "clean up
                // behind you"
-  void handle_event(SDL_Event& event);
 };
 
 // Insert here:

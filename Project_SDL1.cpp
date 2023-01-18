@@ -249,29 +249,13 @@ shepherd::shepherd(const std::string& file_path, SDL_Surface* window_surface_ptr
 shepherd::~shepherd() {
     SDL_FreeSurface(image_ptr_);
   }
-
-void shepherd::handle_event(SDL_Event& e) {
-  //If a key was pressed
-  if (e.type == SDL_KEYDOWN && e.key.repeat == 0) {
-    //Adjust the velocity
-    switch (e.key.keysym.sym) {
-    case SDLK_z: set_direction_y(-1); break;
-    case SDLK_s: set_direction_y(1); break;
-    case SDLK_q: set_direction_x(-1); break;
-    case SDLK_d: set_direction_x(1); break;
-    }
-  }
-  //If a key was released
-  else if (e.type == SDL_KEYUP && e.key.repeat == 0) {
-    //Adjust the velocity
-    switch (e.key.keysym.sym) {
-    case SDLK_z: set_direction_y(0); break;
-    case SDLK_s: set_direction_y(0); break;
-    case SDLK_q: set_direction_x(0); break;
-    case SDLK_d: set_direction_x(0); break;
-    }
-  }
+/*
+void shepherd::move(std::vector<std::shared_ptr<object>> characters)
+{
+  set_x(get_x() + get_direction_x() * get_speed());
+  set_y(get_y() + get_direction_y() * get_speed());
 }
+*/
 /*###### shepherd #########*/
 
 
@@ -539,8 +523,8 @@ application::application(unsigned n_sheep, unsigned n_wolf)
 {
   // Create window
   window_ptr_ = SDL_CreateWindow("SDL Project", SDL_WINDOWPOS_UNDEFINED,
-                                 SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH,
-                                 SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+                                 SDL_WINDOWPOS_UNDEFINED, 0,
+                                 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
   if (window_ptr_ == nullptr)
     throw std::runtime_error("application(): Window could not be created! "
                              "SDL_Error: " +
@@ -558,10 +542,7 @@ application::application(unsigned n_sheep, unsigned n_wolf)
  object_ptr_->add_character(std::make_shared<shepherd>("images/shepherd.png", window_surface_ptr_));
 
 
-  // Load sheep
-  
-  
-
+ 
 
 
   // Load wolf
@@ -569,9 +550,15 @@ application::application(unsigned n_sheep, unsigned n_wolf)
   for (unsigned i = 0; i < n_wolf; ++i) {
     object_ptr_->add_character(std::make_shared<wolf>("images/wolf.png", window_surface_ptr_));
   }
+
+   // Load sheep
+  
+
   for (unsigned i = 0; i < n_sheep; ++i) {
     object_ptr_->add_character(std::make_shared<sheep>("images/sheep.png", window_surface_ptr_));
   }
+
+  // Load shepherd dog
   for(unsigned i = 0; i < NB_SHEPHERD_DOG; ++i)
   {
     object_ptr_->add_character(std::make_shared<shepherd_dog>("images/dog.png", window_surface_ptr_,i));
@@ -612,7 +599,7 @@ int application::loop(unsigned period) {
 
   object * shepherd_dog_selection = nullptr;
   //create shepherd and get the pointer of type SHEPHERD in object_ptr_ copy it to shepherd
-  //shepherd * shphrd = dynamic_cast<shepherd *>(object_ptr_->get_characters_by_type(SHEPHERD));
+  object * shphrd = object_ptr_->get_characters_by_type(SHEPHERD, object_ptr_->get_characters());
 
   while (!quit) {
     // Handle events on queue
@@ -626,7 +613,6 @@ int application::loop(unsigned period) {
       {
         if(e.button.button == SDL_BUTTON_LEFT)
         {
-          std :: cout << "x = " << e.button.x << " y = " << e.button.y << std :: endl;
           shepherd_dog_selection = get_shepherd_dog_selection(object_ptr_->get_characters(), e.button.x, e.button.y);
           if(shepherd_dog_selection != nullptr)
           {
@@ -643,6 +629,24 @@ int application::loop(unsigned period) {
             shepherd_dog_selection->set_go_hunt(true);
             shepherd_dog_selection = nullptr;
           }
+        }
+      }
+      if (e.type == SDL_KEYDOWN) {
+        switch (e.key.keysym.sym) {
+        case SDLK_z:
+          shphrd->set_y(shphrd->get_y() - 10);
+          break;
+        case SDLK_s:
+          shphrd->set_y(shphrd->get_y() + 10);
+          break;
+        case SDLK_q:
+          shphrd->set_x(shphrd->get_x() - 10);
+          break;
+        case SDLK_d:
+          shphrd->set_x(shphrd->get_x() + 10);
+          break;
+        default:
+          break;
         }
       }
     }
