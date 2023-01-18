@@ -580,7 +580,7 @@ application::application(unsigned n_sheep, unsigned n_wolf)
   // Load shepherd dog
   for(unsigned i = 0; i < NB_SHEPHERD_DOG; ++i)
   {
-    object_ptr_->add_character(std::make_shared<shepherd_dog>("images/dog.png", window_surface_ptr_,i));
+    object_ptr_->add_character(std::make_shared<shepherd_dog>("images/dog.bmp", window_surface_ptr_,i));
   }
 
 }
@@ -694,7 +694,7 @@ int application::loop(unsigned period) {
     // Wait
     SDL_Delay(10);
   }
-  std::cout << "game : " << object_ptr_->get_characters().size() << std::endl;
+
   return 0;
 }
 
