@@ -26,6 +26,8 @@ constexpr unsigned SPEED_WOLF = 3;
 constexpr unsigned SPEED_MOUTON = 2;
 constexpr unsigned SPEED_DOG = 10;
 constexpr unsigned AURA_MOUTON = 250;
+constexpr unsigned TIME_SINCE_LAST_KILL = 400;
+constexpr unsigned TIME_SINCE_LAST_PROCREATION = 400;
 constexpr float ORBIT_SPEED = 0.030f; //speed of the shepherd dog
 constexpr unsigned ORBIT_RADIUS = 170.0f; //radius of the shepherd dog
 constexpr unsigned AURA_PROCREATION = 10; //aura of the sheep to procreate 
@@ -111,7 +113,7 @@ public:
 };
 
 object * get_shepherd_dog_selection(std::vector<std::shared_ptr<object>> characters, int x_pos_mouse ,int y_pos_mouse);
-
+int gameplay (std::vector<std::shared_ptr<object>> characters, SDL_Surface * window_surface_p, object * obj);
 class moving_object : public object
 {
     // todo: Define the attributes of a moving object
@@ -125,8 +127,6 @@ class moving_object : public object
       float get_speed() const;
       
       void set_speed(float speed);
-      
-
      
 };
 

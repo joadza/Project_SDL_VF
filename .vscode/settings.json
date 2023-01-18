@@ -47,6 +47,9 @@
         "streambuf": "cpp",
         "cinttypes": "cpp",
         "typeinfo": "cpp",
-        "chrono": "cpp"
+        "chrono": "cpp",
+        "ctime": "cpp",
+        "ratio": "cpp",
+        "numbers": "cpp"
     }
 }

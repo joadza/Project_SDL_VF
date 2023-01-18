@@ -183,7 +183,9 @@ float object::get_direction_x() const { return direction_x; }
 float object::get_direction_y() const { return direction_y; }
 
 
-
+object * get_character(int index, std::vector<std::shared_ptr<object>> characters) {
+  return characters[index].get();
+}
 /*######## object ########*/
 
 /***** Moving Object ***********/
@@ -411,6 +413,7 @@ sheep::sheep(const std::string& file_path, SDL_Surface* window_surface_ptr)
     set_direction_y(rand() % 1000);
     set_alive(true);
     set_type(SHEEP);
+    set_time(TIME_SINCE_LAST_PROCREATION);
     set_image_ptr(load_surface_for(file_path, window_surface_ptr));
     if (rand() % 2 == 1)
         sexe = MALE;
@@ -444,11 +447,12 @@ void sheep::move(std::vector<std::shared_ptr<object>> characters) {
   object *nearest_wolf = get_nearest_object(WOLF, characters);
   sheep *nearest_sheep = dynamic_cast<sheep*>(get_nearest_object(SHEEP, characters));
   //transforme nearest_wolf en un pointeur de type wolf
-  //moving_object *wolf_ptr = dynamic_cast<moving_object*>(nearest_wolf);
+  wolf *nearest_wolf2 = dynamic_cast<wolf*>(nearest_wolf);
   
 
   if (distance(nearest_wolf) < AURA_KILL) {
     set_alive(false);
+    nearest_wolf2->set_time(TIME_SINCE_LAST_KILL);
     return;
   }
 
@@ -495,7 +499,7 @@ wolf::wolf(const std::string& file_path, SDL_Surface* window_surface_ptr)
     set_alive(true);
     set_shape_size(70);
     set_type(WOLF);
-    set_time(15);
+    set_time(TIME_SINCE_LAST_KILL);
     std::cout <<  "sabir : " << get_time() << std::endl;
     set_image_ptr(load_surface_for(file_path, window_surface_ptr));
     if (get_image_ptr() == nullptr)
@@ -558,9 +562,6 @@ application::application(unsigned n_sheep, unsigned n_wolf)
 
    // Load shepherd
  object_ptr_->add_character(std::make_shared<shepherd>("images/shepherd.png", window_surface_ptr_));
-
-
- 
 
 
   // Load wolf
@@ -672,8 +673,19 @@ int application::loop(unsigned period) {
     //draw background
     background_ptr_->draw(window_surface_ptr_, background_ptr_->get_image_ptr());
 
-    // Update
 
+    // game play
+    int end_game = gameplay(object_ptr_->get_characters(), window_surface_ptr_, object_ptr_);
+
+    if (end_game == - 1) {
+      quit = true;
+      std::cout << "Game Over You win" << std::endl;
+    } else if (end_game == 1) {
+      quit = true;
+      std::cout << "Game Over You lose" << std::endl;
+    }
+    
+    // Update
     object_ptr_->update();
 
     // Update the surface
@@ -682,7 +694,7 @@ int application::loop(unsigned period) {
     // Wait
     SDL_Delay(10);
   }
-
+  std::cout << "game : " << object_ptr_->get_characters().size() << std::endl;
   return 0;
 }
 
@@ -704,6 +716,77 @@ object * get_shepherd_dog_selection(std::vector<std::shared_ptr<object>> charact
     return NULL;
 }
 
+
+int gameplay (std::vector<std::shared_ptr<object>> characters, SDL_Surface * window_surface_p, object* obj)
+{
+  int nb_wolf;
+  int nb_sheep;
+
+  // check if there is a wolf
+  for( auto character : characters)
+  {
+    if (character->get_type() == WOLF)
+        nb_wolf++;
+  }
+  if (nb_wolf == 0)
+    return -1;
+  
+
+  // check if there is a sheep
+  for( auto character : characters)
+  {
+    if (character->get_type() == SHEEP)
+        nb_sheep++;
+  }
+
+  if (nb_sheep == 0)
+    return 1;
+
+  // handler time wolf
+  for( auto character : characters)
+  {
+    if (character->get_type() == WOLF)
+    {
+      wolf * wolf_ptr = dynamic_cast<wolf *>(character.get());
+      if (wolf_ptr->get_time() == 0)
+      {
+        wolf_ptr->set_alive(false);
+        if (nb_wolf == 1)
+           return -1;
+      }
+      else
+      {
+        wolf_ptr->set_time(wolf_ptr->get_time() - 1);
+      }
+    }
+  }
+
+  // procreate sheep
+  for( auto character : characters)
+  {
+    if (character->get_type() == SHEEP)
+    {
+      sheep * sheep_ptr = dynamic_cast<sheep *>(character.get());
+      object *  tmp_character = character->get_nearest_object(SHEEP, characters);
+      sheep * tmp_sheep_ptr = dynamic_cast<sheep *>(tmp_character);
+      if (sheep_ptr->get_time() == TIME_SINCE_LAST_PROCREATION && character->distance(tmp_character) < AURA_PROCREATION && tmp_sheep_ptr->get_sexe() != sheep_ptr->get_sexe())
+      {
+          obj->add_character(std::make_shared<sheep>("images/sheep.png", window_surface_p));
+          sheep_ptr->set_time(sheep_ptr->get_time() - 1);
+      }
+      else
+      {
+        if (sheep_ptr->get_time() == 0)
+        {
+          sheep_ptr->set_time(TIME_SINCE_LAST_PROCREATION);
+        }
+        else
+          sheep_ptr->set_time(sheep_ptr->get_time() - 1);
+      }
+    }
+  }
+  return 0;
+}
 
 
 
