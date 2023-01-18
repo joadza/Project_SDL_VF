@@ -297,6 +297,12 @@ animal::animal(const std::string& file_path, SDL_Surface* window_surface_ptr)
     
 }
 
+
+void animal::set_time(int time_) { this->time = time_; }
+int animal::get_time() const { return time; }
+
+
+/*####### Animal ######*/
 /***** shepherd_dog *****/
 
 
@@ -392,7 +398,7 @@ void shepherd_dog::move(std::vector<std::shared_ptr<object>> characters)
 
 /*######## shepherd_dog ########*/
 
-/*####### Animal ######*/
+
 
 /***** Sheep *****/
 sheep::sheep(const std::string& file_path, SDL_Surface* window_surface_ptr)
@@ -424,10 +430,19 @@ sheep::~sheep() {
   SDL_FreeSurface(get_image_ptr());
 }
 
+void sheep::set_sexe(Gender sexe_) {
+  sexe = sexe_;
+}
+
+Gender sheep::get_sexe() const {
+  return sexe;
+}
+
 void sheep::move(std::vector<std::shared_ptr<object>> characters) {
  
  
   object *nearest_wolf = get_nearest_object(WOLF, characters);
+  sheep *nearest_sheep = dynamic_cast<sheep*>(get_nearest_object(SHEEP, characters));
   //transforme nearest_wolf en un pointeur de type wolf
   //moving_object *wolf_ptr = dynamic_cast<moving_object*>(nearest_wolf);
   
@@ -445,6 +460,7 @@ void sheep::move(std::vector<std::shared_ptr<object>> characters) {
   else{
     set_speed(SPEED_MOUTON);
   }
+
 
   float temp_taux = 0.1;
 
@@ -479,6 +495,8 @@ wolf::wolf(const std::string& file_path, SDL_Surface* window_surface_ptr)
     set_alive(true);
     set_shape_size(70);
     set_type(WOLF);
+    set_time(15);
+    std::cout <<  "sabir : " << get_time() << std::endl;
     set_image_ptr(load_surface_for(file_path, window_surface_ptr));
     if (get_image_ptr() == nullptr)
       throw std::runtime_error("wolf(): Unable to load image " + file_path +
@@ -571,6 +589,7 @@ application::~application() {
   SDL_DestroyWindow(window_ptr_);
   SDL_Quit();
 }
+
 void object::update() {
   // Move all animals
   for (auto it = characters.begin(); it != characters.end(); ) {
@@ -588,10 +607,10 @@ int application::loop(unsigned period) {
   // Event handler
   SDL_Event e;
   srand(time(NULL));
-  
+  auto end = SDL_GetTicks() + period * 1000;
+
   background * background_ptr_ =  new background("images/background.png", window_surface_ptr_);
  
-
   // While application is running
   bool quit = false;
 
@@ -601,7 +620,7 @@ int application::loop(unsigned period) {
   //create shepherd and get the pointer of type SHEPHERD in object_ptr_ copy it to shepherd
   object * shphrd = object_ptr_->get_characters_by_type(SHEPHERD, object_ptr_->get_characters());
 
-  while (!quit) {
+  while (!quit && SDL_GetTicks() < end) {
     // Handle events on queue
     while (SDL_PollEvent(&e) != 0) {
       // User requests quit
@@ -654,7 +673,6 @@ int application::loop(unsigned period) {
     background_ptr_->draw(window_surface_ptr_, background_ptr_->get_image_ptr());
 
     // Update
-    //disply first element of object_ptr
 
     object_ptr_->update();
 
@@ -662,7 +680,7 @@ int application::loop(unsigned period) {
     SDL_UpdateWindowSurface(window_ptr_);
 
     // Wait
-    SDL_Delay(period);
+    SDL_Delay(10);
   }
 
   return 0;

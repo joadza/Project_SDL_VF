@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <vector>
+#include <time.h>
 
 // Defintions
 constexpr double frame_rate = 60.0; // refresh rate
@@ -25,7 +26,7 @@ constexpr unsigned SPEED_WOLF = 3;
 constexpr unsigned SPEED_MOUTON = 2;
 constexpr unsigned SPEED_DOG = 10;
 constexpr unsigned AURA_MOUTON = 250;
-#define ORBIT_SPEED 0.030f //speed of the shepherd dog
+constexpr float ORBIT_SPEED = 0.030f; //speed of the shepherd dog
 constexpr unsigned ORBIT_RADIUS = 170.0f; //radius of the shepherd dog
 constexpr unsigned AURA_PROCREATION = 10; //aura of the sheep to procreate 
 constexpr unsigned NB_SHEPHERD_DOG = 3;
@@ -167,7 +168,7 @@ private:
   SDL_Surface* image_ptr_; // The texture of the sheep (the loaded image), use
                            // load_surface_for
   // todo: Attribute(s) to define its position
-  bool time;
+  int time;
 
 public:
   animal(const std::string& file_path, SDL_Surface* window_surface_ptr);
@@ -175,7 +176,9 @@ public:
   // texture
   ~animal(){}; // todo: Use the destructor to release memory and "clean up
                // behind you"
- // todo: Move the animals
+  void set_time(int time_);
+  int get_time() const;
+ 
  
 };
 
@@ -247,6 +250,8 @@ public:
   ~sheep(); // todo: Use the destructor to release memory and "clean up
                // behind you"
   void move(std::vector<std::shared_ptr<object>> characters);
+  Gender get_sexe() const;
+  void set_sexe(Gender sexe_);
   // todo
   // Ctor
   // Dtor
