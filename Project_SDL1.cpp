@@ -140,28 +140,14 @@ object* object::get_nearest_object(Type type, std::vector<std::shared_ptr<object
 }
 
 
-void object::set_direction_x(float direction_x) {
-  this->direction_x = direction_x;
-}
-
-void object::set_direction_y(float direction_y) {
-  this->direction_y = direction_y;
-}
-float object::get_direction_x() const { return direction_x; }
-float object::get_direction_y() const { return direction_y; }
-
-
 object * get_character(int index, std::vector<std::shared_ptr<object>> characters) {
   return characters[index].get();
 }
 /*######## object ########*/
 
+
+
 /***** Moving Object ***********/
-
-
-
-
-
 moving_object::moving_object(SDL_Surface* window_surface_ptr)
     : object(window_surface_ptr) {
     
@@ -170,6 +156,16 @@ moving_object::moving_object(SDL_Surface* window_surface_ptr)
 void moving_object::set_speed(float speed) { this->speed = speed; }
 
 float moving_object::get_speed() const { return speed; }
+
+void moving_object::set_direction_x(float direction_x) {
+  this->direction_x = direction_x;
+}
+
+void moving_object::set_direction_y(float direction_y) {
+  this->direction_y = direction_y;
+}
+float moving_object::get_direction_x() const { return direction_x; }
+float moving_object::get_direction_y() const { return direction_y; }
 
 
 /*########### Moving object ###########*/
@@ -184,6 +180,7 @@ non_moveable_object::non_moveable_object(const std::string& file_path,
 
 /*########### NON Moveable Object ###########*/
 
+
 /***** Playable Character *****/
 
 
@@ -195,8 +192,7 @@ playable_character::playable_character(const std::string& file_path, SDL_Surface
 playable_character::~playable_character() {
 
 }
-
-
+/*########### Playable Character ###########*/
 
 
 /******** shepherd ********/
@@ -222,11 +218,8 @@ shepherd::~shepherd() {
 
 /*###### shepherd #########*/
 
-
-
-
-
 /***** Background *****/
+
 background::background(const std::string& file_path,
                        SDL_Surface* window_surface_ptr)
     :non_moveable_object(file_path, window_surface_ptr) {
@@ -250,9 +243,8 @@ SDL_Surface* background::get_image_ptr() const {
   return image_ptr_;
 }
 
-
-
 /*########### Background ###########*/
+
 
 /****** Animal ****/
 animal::animal(const std::string& file_path, SDL_Surface* window_surface_ptr)
@@ -261,15 +253,13 @@ animal::animal(const std::string& file_path, SDL_Surface* window_surface_ptr)
     
 }
 
-
 void animal::set_time(int time_) { this->time = time_; }
 int animal::get_time() const { return time; }
 
-
 /*####### Animal ######*/
+
+
 /***** shepherd_dog *****/
-
-
 
 shepherd_dog::shepherd_dog(const std::string& file_path, SDL_Surface* window_surface_ptr,int i)
     : animal(file_path, window_surface_ptr) {
@@ -282,12 +272,6 @@ shepherd_dog::shepherd_dog(const std::string& file_path, SDL_Surface* window_sur
 
   angle = (6.2831/NB_SHEPHERD_DOG) * (i+1); 
 
-  //put angle in fonction of number of shepherd dog
-
-
-
-  std::cout << "raduis = " << rand()%360 << std::endl;
-  std::cout << "shepherd_dog(): angle = " << get_angle() << std::endl;
   set_is_hunting(false);
 
 
@@ -390,9 +374,7 @@ int shepherd_dog::get_y_hunt() const {
   return y_hunt;
 }
 
-
 /*######## shepherd_dog ########*/
-
 
 
 /***** Sheep *****/
@@ -412,14 +394,12 @@ sheep::sheep(const std::string& file_path, SDL_Surface* window_surface_ptr)
         sexe = MALE;
     else
         sexe = FEMELLE;
-    //image_ptr_ = load_surface_for(file_path, window_surface_ptr);
+
     if (get_image_ptr() == nullptr)
       throw std::runtime_error("sheep(): Unable to load image " + file_path +
                                "! SDL_image Error: " + std::string(IMG_GetError()));
     else
       std::cout << "Sheep loaded successfully" << std::endl;
-
-    std::cout << get_image_ptr() << std::endl;
 }
 
 sheep::~sheep() {
@@ -437,9 +417,8 @@ Gender sheep::get_sexe() const {
 void sheep::move(std::vector<std::shared_ptr<object>> characters) {
  
  
-  object *nearest_wolf = get_nearest_object(WOLF, characters);
+  wolf *nearest_wolf = dynamic_cast<wolf*>(get_nearest_object(WOLF, characters));
   sheep *nearest_sheep = dynamic_cast<sheep*>(get_nearest_object(SHEEP, characters));
-  //transforme nearest_wolf en un pointeur de type wolf
   wolf *nearest_wolf2 = dynamic_cast<wolf*>(nearest_wolf);
   
 
@@ -475,9 +454,6 @@ void sheep::move(std::vector<std::shared_ptr<object>> characters) {
 
 }
 
-
-
-
 /*######  Sheep ######*/
 
 
@@ -493,7 +469,7 @@ wolf::wolf(const std::string& file_path, SDL_Surface* window_surface_ptr)
     set_shape_size(70);
     set_type(WOLF);
     set_time(TIME_SINCE_LAST_KILL);
-    std::cout <<  "sabir : " << get_time() << std::endl;
+
     set_image_ptr(load_surface_for(file_path, window_surface_ptr));
     if (get_image_ptr() == nullptr)
       throw std::runtime_error("wolf(): Unable to load image " + file_path +
@@ -509,8 +485,6 @@ void wolf::move(std::vector<std::shared_ptr<object>> characters) {
   object * neareast = get_nearest_object(SHEEP, characters);
   shepherd_dog * nearest_dog = dynamic_cast<shepherd_dog*>(get_nearest_object(SHEPHERD_DOG, characters));
   
-  //transforme nearest_wolf en un pointeur de type wolf
-  //moving_object *wolf_ptr = dynamic_cast<moving_object*>(neareast);
   if(distance(nearest_dog) < AURA_DOG){
     set_direction_x(get_x() - nearest_dog->get_x());
     set_direction_y(get_y() - nearest_dog->get_y() );
@@ -532,7 +506,6 @@ void wolf::move(std::vector<std::shared_ptr<object>> characters) {
 /*###### Wolf ######*/
 
 
-
 /*** Application *****/
 application::application(unsigned n_sheep, unsigned n_wolf)
 {
@@ -551,21 +524,15 @@ application::application(unsigned n_sheep, unsigned n_wolf)
 
   object_ptr_ = new object(window_surface_ptr_);
 
-
-
    // Load shepherd
  object_ptr_->add_character(std::make_shared<shepherd>("images/shepherd.png", window_surface_ptr_));
 
-
-  // Load wolf
-  
+  // Load wolf  
   for (unsigned i = 0; i < n_wolf; ++i) {
     object_ptr_->add_character(std::make_shared<wolf>("images/wolf.png", window_surface_ptr_));
   }
 
    // Load sheep
-  
-
   for (unsigned i = 0; i < n_sheep; ++i) {
     object_ptr_->add_character(std::make_shared<sheep>("images/sheep.png", window_surface_ptr_));
   }
@@ -685,11 +652,16 @@ int application::loop(unsigned period) {
     SDL_UpdateWindowSurface(window_ptr_);
 
     // Wait
-    SDL_Delay(10);
+    SDL_Delay(16);
   }
 
   return 0;
 }
+
+/***#### application ####***/
+
+
+/**** Global functions****/
 
 object * get_shepherd_dog_selection(std::vector<std::shared_ptr<object>> characters, int x_pos_mouse ,int y_pos_mouse)
 {
@@ -697,9 +669,9 @@ object * get_shepherd_dog_selection(std::vector<std::shared_ptr<object>> charact
     {
       if((*character)->get_type() == SHEPHERD_DOG)
       {
-        if((*character)->get_x() < x_pos_mouse && (*character)->get_x() + (*character)->get_shape_size() > x_pos_mouse)
+        if((*character)->get_x() - AURA_CLICK < x_pos_mouse && (*character)->get_x() + (*character)->get_shape_size() + AURA_CLICK > x_pos_mouse)
         {
-            if ((*character)->get_y() < y_pos_mouse && (*character)->get_y() + (*character)->get_shape_size() > y_pos_mouse)
+            if ((*character)->get_y() - AURA_CLICK < y_pos_mouse && (*character)->get_y() + (*character)->get_shape_size() + AURA_CLICK > y_pos_mouse)
             {
                 return (*character).get();
             }
@@ -781,6 +753,6 @@ int gameplay (std::vector<std::shared_ptr<object>> characters, SDL_Surface * win
   return 0;
 }
 
-
+/*####### Global functions #######*/
 
 

@@ -26,6 +26,7 @@ constexpr unsigned SPEED_WOLF = 3;
 constexpr unsigned SPEED_MOUTON = 2;
 constexpr unsigned SPEED_DOG = 10;
 constexpr unsigned AURA_MOUTON = 250;
+constexpr unsigned AURA_CLICK = 20;
 constexpr unsigned TIME_SINCE_LAST_KILL = 800;
 constexpr unsigned TIME_SINCE_LAST_PROCREATION = 400;
 constexpr float ORBIT_SPEED = 0.030f; //speed of the shepherd dog
@@ -83,16 +84,6 @@ public:
   bool is_alive();
   object * get_characters_by_type(Type type, std::vector<std::shared_ptr<object>> characters);
 
-  
-
-
-  float get_direction_x() const;
-  float get_direction_y() const;
-  void set_direction_x(float direction_x);
-  void set_direction_y(float direction_y);
-  float direction_x;
-  float direction_y;
-
   // todo: Draw all animals
   
                  // Note that this function is not virtual, it does not depend
@@ -107,6 +98,8 @@ class moving_object : public object
     // todo: Define the attributes of a moving object
     private:
       float speed;
+      float direction_x;
+      float direction_y;
       
       
     public:
@@ -115,6 +108,11 @@ class moving_object : public object
       float get_speed() const;
       
       void set_speed(float speed);
+
+      float get_direction_x() const;
+      float get_direction_y() const;
+      void set_direction_x(float direction_x);
+      void set_direction_y(float direction_y);
      
 };
 
@@ -147,8 +145,6 @@ class background : public non_moveable_object {
 
 
 
-
-
 class animal : public moving_object {
 private:
   SDL_Surface* window_surface_ptr_; // ptr to the surface on which we want the
@@ -175,14 +171,6 @@ class shepherd_dog : public animal {
     public:
         shepherd_dog(const std::string& file_path, SDL_Surface* window_surface_ptr,int i);
         ~shepherd_dog();
-        /*
-        * @brief: Maj position of the sheep
-        *
-        * @param: wolves: a array of wolves
-        * @param: other: other animal
-        * @param: size: size of the wolves array
-        * @param: size_other: size of the other array
-        */
         void move(std::vector<std::shared_ptr<object>> characters);
         shepherd_dog * get_shepherd_dog_selection(std::vector<std::shared_ptr<object>> characters, int x_pos_mouse ,int y_pos_mouse);
         //set and get is hunting
@@ -270,19 +258,7 @@ public:
   ~wolf(); // todo: Use the destructor to release memory and "clean up
                // behind you"
   void move(std::vector<std::shared_ptr<object>> characters);
-
-  // todo
-  // Ctor
-  // Dtor
-  // implement functions that are purely virtual in base class
 };
-
-
-// Insert here:
-// class wolf, derived from animal
-// Use only sheep at first. Once the application works
-// for sheep you can add the wolves
-
 
 // The application class, which is in charge of generating the window
 class application {
@@ -300,10 +276,5 @@ public:
   application(unsigned n_sheep, unsigned n_wolf); // Ctor
   ~application();                                 // dtor
 
-  int loop(unsigned period); // main loop of the application.
-                             // this ensures that the screen is updated
-                             // at the correct rate.
-                             // See SDL_GetTicks() and SDL_Delay() to enforce a
-                             // duration the application should terminate after
-                             // 'period' seconds
+  int loop(unsigned period); 
 };
