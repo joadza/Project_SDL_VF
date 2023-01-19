@@ -26,7 +26,7 @@ constexpr unsigned SPEED_WOLF = 3;
 constexpr unsigned SPEED_MOUTON = 2;
 constexpr unsigned SPEED_DOG = 10;
 constexpr unsigned AURA_MOUTON = 250;
-constexpr unsigned TIME_SINCE_LAST_KILL = 400;
+constexpr unsigned TIME_SINCE_LAST_KILL = 800;
 constexpr unsigned TIME_SINCE_LAST_PROCREATION = 400;
 constexpr float ORBIT_SPEED = 0.030f; //speed of the shepherd dog
 constexpr unsigned ORBIT_RADIUS = 170.0f; //radius of the shepherd dog
@@ -58,11 +58,6 @@ private:
   // Some attribute to store all the wolves and sheep
   // here
 
-  bool is_hunting;
-  bool is_go_hunt;
-  int x_hunt;
-  int y_hunt;
-
 public:
   object(SDL_Surface* window_surface_ptr); // todo: Ctor
   ~object(){}; // todo: Dtor, again for clean up (if necessary)
@@ -88,22 +83,15 @@ public:
   bool is_alive();
   object * get_characters_by_type(Type type, std::vector<std::shared_ptr<object>> characters);
 
-  void set_x_hunt(int x);
-  void set_y_hunt(int y);
-  int get_x_hunt() const;
-  int get_y_hunt() const;
-  void set_is_hunting(bool is_hunting_);
-  bool get_is_hunting() const;
-  void set_go_hunt(bool go_hunt_);
-  bool get_go_hunt() const;
+  
 
 
   float get_direction_x() const;
-      float get_direction_y() const;
-      void set_direction_x(float direction_x);
-      void set_direction_y(float direction_y);
-      float direction_x;
-      float direction_y;
+  float get_direction_y() const;
+  void set_direction_x(float direction_x);
+  void set_direction_y(float direction_y);
+  float direction_x;
+  float direction_y;
 
   // todo: Draw all animals
   
@@ -201,12 +189,23 @@ class shepherd_dog : public animal {
         
         void set_angle(float angle);
         float get_angle() const;
-        
+        void set_x_hunt(int x);
+        void set_y_hunt(int y);
+        int get_x_hunt() const;
+        int get_y_hunt() const;
+        void set_is_hunting(bool is_hunting_);
+        bool get_is_hunting() const;
+        void set_go_hunt(bool go_hunt_);
+        bool get_go_hunt() const;
 
 
 
     private:
         float angle;
+        bool is_hunting;
+        bool is_go_hunt;
+        int x_hunt;
+        int y_hunt;
 
 
 };

@@ -140,38 +140,6 @@ object* object::get_nearest_object(Type type, std::vector<std::shared_ptr<object
 }
 
 
-void object::set_is_hunting(bool is_hunting_) {
-  is_hunting = is_hunting_;
-}
-
-bool object::get_is_hunting() const {
-  return is_hunting;
-}
-
-void object::set_go_hunt(bool go_hunt) {
-  is_go_hunt = go_hunt;
-}
-
-bool object::get_go_hunt() const {
-  return is_go_hunt;
-}
-
-void object::set_x_hunt(int x_hunt_) {
-  x_hunt = x_hunt_;
-}
-
-int object::get_x_hunt() const {
-  return x_hunt;
-}
-
-void object::set_y_hunt(int y_hunt_) {
-  y_hunt = y_hunt_;
-}
-
-int object::get_y_hunt() const {
-  return y_hunt;
-}
-
 void object::set_direction_x(float direction_x) {
   this->direction_x = direction_x;
 }
@@ -251,13 +219,7 @@ shepherd::shepherd(const std::string& file_path, SDL_Surface* window_surface_ptr
 shepherd::~shepherd() {
     SDL_FreeSurface(image_ptr_);
   }
-/*
-void shepherd::move(std::vector<std::shared_ptr<object>> characters)
-{
-  set_x(get_x() + get_direction_x() * get_speed());
-  set_y(get_y() + get_direction_y() * get_speed());
-}
-*/
+
 /*###### shepherd #########*/
 
 
@@ -394,7 +356,38 @@ void shepherd_dog::move(std::vector<std::shared_ptr<object>> characters)
 
   }
 
+}
 
+void shepherd_dog::set_is_hunting(bool is_hunting_) {
+  is_hunting = is_hunting_;
+}
+
+bool shepherd_dog::get_is_hunting() const {
+  return is_hunting;
+}
+
+void shepherd_dog::set_go_hunt(bool go_hunt) {
+  is_go_hunt = go_hunt;
+}
+
+bool shepherd_dog::get_go_hunt() const {
+  return is_go_hunt;
+}
+
+void shepherd_dog::set_x_hunt(int x_hunt_) {
+  x_hunt = x_hunt_;
+}
+
+int shepherd_dog::get_x_hunt() const {
+  return x_hunt;
+}
+
+void shepherd_dog::set_y_hunt(int y_hunt_) {
+  y_hunt = y_hunt_;
+}
+
+int shepherd_dog::get_y_hunt() const {
+  return y_hunt;
 }
 
 
@@ -617,7 +610,7 @@ int application::loop(unsigned period) {
 
   //printobject(object_ptr_->get_characters());
 
-  object * shepherd_dog_selection = nullptr;
+  shepherd_dog * shepherd_dog_selection = nullptr;
   //create shepherd and get the pointer of type SHEPHERD in object_ptr_ copy it to shepherd
   object * shphrd = object_ptr_->get_characters_by_type(SHEPHERD, object_ptr_->get_characters());
 
@@ -633,7 +626,7 @@ int application::loop(unsigned period) {
       {
         if(e.button.button == SDL_BUTTON_LEFT)
         {
-          shepherd_dog_selection = get_shepherd_dog_selection(object_ptr_->get_characters(), e.button.x, e.button.y);
+          shepherd_dog_selection = dynamic_cast<shepherd_dog*>(get_shepherd_dog_selection(object_ptr_->get_characters(), e.button.x, e.button.y));
           if(shepherd_dog_selection != nullptr)
           {
             std :: cout << "shepherd dog selected" << std :: endl;
