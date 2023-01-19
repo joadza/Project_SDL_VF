@@ -1,8 +1,6 @@
 # Project_SDL_VF
 
 This is a game in C++ using SDL library
-
-insert image in te readme.md file in github repository using markdown syntax as follows: 
     
 
 <img src="/images/background.png">
